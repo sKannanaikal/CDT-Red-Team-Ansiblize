@@ -1,0 +1,51 @@
+---
+#Name: Sean Kannanaikal
+#Email: stk5106@rit.edu
+#Date: 09/17/2023
+
+  - name: Install and Configure OpenSSH-Server of Linux based boxes
+    hosts: Linux
+    
+    tasks: 
+      #This particular task is installing package and will upgrade the ssh-server if it is already installed
+
+      - name: Install openssh-server package
+        apt: 
+          name: openssh-server
+          state: latest
+          update_cache: true
+          only_upgrade: true
+        become: yes
+
+      #This task will simply restart the ssh server and enable it to ensure it is always started on boot
+
+      - name: Restart openssh-server and Enable openssh-server
+        shell:
+          cmd: systemctl restart ssh && systemctl enable ssh
+        become: yes
+
+      #THis task will make a backup copy of the default configuration file
+
+      - name: Backup Default Configuration File
+        shell:
+          cmd: mv /etc/ssh/sshd_config /etc/ssh/default.config
+        become: yes
+      
+      #copying over ssh configuration file from the local configs directory
+      # this configuration intentional vulnerabilities such as permitting root login, only using password authentication, and allowing X11 forwarding
+      
+      - name: Copy over new ssh configuration file
+        copy:
+          src: ./configs/sshd_config
+          dest: /etc/ssh/sshd_config
+          owner: root
+          group: root
+          mode: '0644'
+        become: yes
+
+      #the final task just restarts the ssh-server
+
+      - name: Restart openssh-server
+        shell: 
+          cmd: systemctl restart ssh
+        become: yes 
